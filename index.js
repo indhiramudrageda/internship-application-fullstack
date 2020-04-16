@@ -41,7 +41,7 @@ async function handleRequest(request, res) {
 	let content = "";	
 	// If url is not set, implying first time request, variant is picked at random.
 	if (!url) {
-		selectedVariant = getRandomInt(variants.length);
+		selectedVariant = getRandomNumber(variants.length);
 		url = variants[selectedVariant];
 		selectedVariant++;
   	}
@@ -61,6 +61,11 @@ async function handleRequest(request, res) {
 	return new HTMLRewriter().on('*', new ElementHandler()).transform(new Response(content, { headers: { 'content-type': 'text/html', 'Set-Cookie' : 'variant='+url} }));
 }
 
+/**
+ * Respond cookie value
+ * @param {Request} request
+ * @param {name} cookie name
+ */
 function getCookie(request, name) {
   let result = null;
   let cookieStr = request.headers.get('Cookie');
@@ -77,6 +82,7 @@ function getCookie(request, name) {
   return result;
 }
 
+//HTMLRewriter used to customize the content on variant page.
 class ElementHandler {
   element(element) {
     if(`${element.tagName}` == 'title')
@@ -87,17 +93,12 @@ class ElementHandler {
     	element.setInnerContent("This is variant "+ selectedVariant +" of the take home project after making custom changes!");
     if(`${element.tagName}` == 'a' && element.getAttribute('id') == 'url') {
    		element.setAttribute('href','https://personal.utdallas.edu/~ixm190001/');
-		element.setInnerContent('Visit my personal website');
+		  element.setInnerContent('Visit my personal website');
     }
-  }
-
-  comments(comment) {
-  }
-
-  text(text) {
   }
 }
 
-function getRandomInt(max) {
+//expected output: [0 - max)
+function getRandomNumber(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
